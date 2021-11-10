@@ -4,7 +4,7 @@ import bge
 from math import sqrt
 import time
 import os
-from concurrent.futures import ProcessPoolExecutor
+
 
 
 def BinarySearch(lys, val):
@@ -42,14 +42,7 @@ class DestructibleObjectInterfaces(object):
         #filename = path + self.object.name + '.txt'
         #self.file = open(filename, 'w')
 
-
-
         self.initBricksByColor()
-
-        self.blocksCount = len(self.bricksByColor)
-        self.demagedBlocksCount = 0
-        self.objectDeathHealth = 15
-
         self.colorMagn = None
         self.thread2 = None
         print(self.object, 'DestructibleObjectInterfaces' )
@@ -88,31 +81,16 @@ class DestructibleObjectInterfaces(object):
         for vertex_index, vertex in enumerate(self.verticies):
             self.updateColorsAndVertexList(vertex_index)
 
-    #проверка здоровья блока
-    def isDead(self):
-        health = (self.blocksCount - self.demagedBlocksCount) * 100
-        if (health < self.objectDeathHealth):
-            self.object.endObject()
-            return True
-        return False
-
-
-        #удаление блока по цвету
+    #удаление блока по цвету
     def removeBrickByColor(self, thread, colorMagn):
         index = BinarySearch(self.bricksByColor, colorMagn)
         if index >= 0:
-            self.demagedBlocksCount += 1
-            if self.isDead():
-                return
             for vertex_index in self.bricksByColor[index][1]:
                 vertex = self.verticies[vertex_index]
                 vertex.XYZ = (0.0, 0.0, 0.0)
             #del self.bricksByColor[index]
             #thread.setProcessingFlagOn(self.updatePhysicsAndCollision)
-            #thread.addFuncToCall(self.updatePhysicsAndCollision, self.object)
-            executor = ProcessPoolExecutor(5)
-            executor.submit(self.updatePhysicsAndCollision)
-
+            thread.addFuncToCall(self.updatePhysicsAndCollision, self.object)
 
     def removeBrickByColor2(self, thread1, thread2, colorMagn):
         self.colorMagn = colorMagn
@@ -240,8 +218,7 @@ class CollisionUpdate(bge.types.KX_GameObject):
 
     def on_collision_three(self, object, point, normal):
         #self.removeCollisionCallback()
-        print(self, 'by', object)
-        #object.removeCollisionCallback() #бессмысленное действие как показывает практика
+        object.removeCollisionCallback()
         self.object = object
         self.computer['Interfaces'].mechDamageObject(self, point, normal)
         #print(self, 'Hit by %r at %s with normal %s' % (object.name, point, normal))
