@@ -7,6 +7,7 @@ https://www.youtube.com/channel/UCkKTqZULsG-nmXCb2fs9Avw/videos
 
 **2. Описание**
 
+В папке Documentation/UML находятся UML схемы описывающие архитектуру проекта
 
 ------------
 
